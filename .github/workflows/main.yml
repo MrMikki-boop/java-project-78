@@ -19,7 +19,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-          build-root-directory: app
+          build-root-directory: .
 
       - run: chmod +x app/gradlew
       - run: make -C app build
