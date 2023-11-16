@@ -45,7 +45,7 @@ application {
 }
 
 compileJava {
-    options.release = 20
+    options.release = 20 as Property<Integer>
     options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
