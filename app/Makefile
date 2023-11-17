@@ -26,5 +26,6 @@ last: # Last version plugin
 	./gradlew useLatestVersions
 
 build-run: build run-dist
+build-test: build test
 
 .PHONY: build
