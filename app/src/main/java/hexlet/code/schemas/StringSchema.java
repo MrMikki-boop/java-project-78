@@ -5,9 +5,8 @@ public class StringSchema {
     private Integer minLength;
     private String contains;
 
-    public StringSchema required() {
+    public void required() {
         required = true;
-        return this;
     }
 
     public StringSchema minLength(int length) {
@@ -15,9 +14,8 @@ public class StringSchema {
         return this;
     }
 
-    public StringSchema contains(String substring) {
+    public void contains(String substring) {
         contains = substring;
-        return this;
     }
 
     public boolean isValid(String value) {
@@ -29,10 +27,6 @@ public class StringSchema {
             return false;
         }
 
-        if (contains != null && !value.contains(contains)) {
-            return false;
-        }
-
-        return true;
+        return contains == null || value.contains(contains);
     }
 }
