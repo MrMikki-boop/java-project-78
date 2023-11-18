@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.schemas.NumberSchema;
 import hexlet.code.schemas.StringSchema;
 import org.junit.jupiter.api.Test;
 
@@ -37,5 +38,18 @@ class ValidatorTest {
 
         // Проверка сочетания условий
         assertFalse(schema.isValid("what does the fox say"));
+    }
+
+    @Test
+    void testNumberSchemaValidation() {
+        Validator v = new Validator();
+        NumberSchema schema = v.number();
+
+        assertTrue(schema.isValid(10)); // Пример успешной валидации
+        assertFalse(schema.isValid(null)); // Пример неуспешной валидации, так как required()
+        assertFalse(schema.isValid("not a number")); // Пример неуспешной валидации, так как не число
+        assertFalse(schema.positive().isValid(-10)); // Пример неуспешной валидации, так как negative number
+        assertTrue(schema.range(5, 10).isValid(7)); // Пример успешной валидации в заданном диапазоне
+        assertFalse(schema.range(5, 10).isValid(11)); // Пример неуспешной валидации вне заданного диапазона
     }
 }
