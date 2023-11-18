@@ -15,13 +15,11 @@ public class StringSchema extends BaseSchema {
 
     @Override
     public boolean isValid(Object value) {
-        if (!(value instanceof String stringValue)) {
+        if (required && (value == null || value.toString().isEmpty())) {
             return false;
         }
 
-        if (required && stringValue.isEmpty()) {
-            return false;
-        }
+        String stringValue = (String) value;
 
         if (minLength != null && stringValue.length() < minLength) {
             return false;
@@ -29,5 +27,4 @@ public class StringSchema extends BaseSchema {
 
         return contains == null || stringValue.contains(contains);
     }
-
 }

@@ -20,8 +20,10 @@ class ValidatorTest {
 
         schema.required();
 
-        // Проверка null и пустой строки после установки required
+        // Проверка null после установки required
         assertFalse(schema.isValid(null));
+
+        // В этом случае, ожидается, что пустая строка не будет валидной
         assertFalse(schema.isValid(""));
 
         // Проверка minLength
@@ -48,7 +50,7 @@ class ValidatorTest {
         assertTrue(schema.isValid(10)); // Пример успешной валидации
         assertFalse(schema.isValid(null)); // Пример неуспешной валидации, так как required()
         assertFalse(schema.isValid("not a number")); // Пример неуспешной валидации, так как не число
-        assertFalse(schema.positive().isValid(-10)); // Пример неуспешной валидации, так как negative number
+        assertFalse(schema.positive().isValid(-10)); // Пример неуспешной валидации, так как отрицательное число
         assertTrue(schema.range(5, 10).isValid(7)); // Пример успешной валидации в заданном диапазоне
         assertFalse(schema.range(5, 10).isValid(11)); // Пример неуспешной валидации вне заданного диапазона
     }
