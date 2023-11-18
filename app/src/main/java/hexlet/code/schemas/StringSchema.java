@@ -9,18 +9,19 @@ public class StringSchema extends BaseSchema {
         return this;
     }
 
-    public StringSchema contains(String substring) {
+    public void contains(String substring) {
         this.contains = substring;
-        return this;
     }
 
     @Override
     public boolean isValid(Object value) {
-        if (required && (value == null || value.toString().isEmpty())) {
+        if (!(value instanceof String stringValue)) {
             return false;
         }
 
-        String stringValue = (String) value;
+        if (required && stringValue.isEmpty()) {
+            return false;
+        }
 
         if (minLength != null && stringValue.length() < minLength) {
             return false;
@@ -28,4 +29,5 @@ public class StringSchema extends BaseSchema {
 
         return contains == null || stringValue.contains(contains);
     }
+
 }
