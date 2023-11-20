@@ -11,9 +11,8 @@ public class MapSchema extends BaseSchema {
         return this;
     }
 
-    public MapSchema sizeof(int size) {
+    public void sizeof(int size) {
         sizeConstraint = size;
-        return this;
     }
 
     @Override
