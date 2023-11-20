@@ -6,9 +6,8 @@ public class MapSchema extends BaseSchema {
     private boolean requireNonNull = false;
     private Integer sizeConstraint;
 
-    public MapSchema required() {
+    public void required() {
         requireNonNull = true;
-        return this;
     }
 
     public void sizeof(int size) {
