@@ -1,8 +1,12 @@
 package hexlet.code;
 
+import hexlet.code.schemas.MapSchema;
 import hexlet.code.schemas.NumberSchema;
 import hexlet.code.schemas.StringSchema;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,5 +57,34 @@ class ValidatorTest {
         assertFalse(schema.positive().isValid(-10)); // Пример неуспешной валидации, так как отрицательное число
         assertTrue(schema.range(5, 10).isValid(7)); // Пример успешной валидации в заданном диапазоне
         assertFalse(schema.range(5, 10).isValid(11)); // Пример неуспешной валидации вне заданного диапазона
+    }
+
+    @Test
+    void testMapSchemaValidation() {
+        Validator v = new Validator();
+        MapSchema schema = v.map();
+
+        // Проверка null до установки required
+        assertTrue(schema.isValid(null));
+
+        schema.required();
+
+        // Проверка null после установки required
+        assertFalse(schema.isValid(null));
+
+        // Проверка пустой Map
+        assertTrue(schema.isValid(new HashMap<>()));
+
+        // Проверка Map с парами ключ-значение
+        Map<String, String> data = new HashMap<>();
+        data.put("key1", "value1");
+        assertTrue(schema.isValid(data));
+
+        // Проверка sizeof
+        schema.sizeof(2);
+        assertFalse(schema.isValid(data));
+
+        data.put("key2", "value2");
+        assertTrue(schema.isValid(data));
     }
 }
