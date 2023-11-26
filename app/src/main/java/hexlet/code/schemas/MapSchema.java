@@ -24,7 +24,7 @@ public class MapSchema extends BaseSchema {
 
     @Override
     public boolean isValid(Object value) {
-        if (requireNonNull && (!(value instanceof Map<?, ?>))) {
+        if (requireNonNull && !(value instanceof Map<?, ?>)) {
             return false;
         }
 
@@ -47,19 +47,22 @@ public class MapSchema extends BaseSchema {
 
     private boolean validateShapeSchemas(Map<?, ?> mapValue) {
         for (Map.Entry<String, BaseSchema> entry : shapeSchemas.entrySet()) {
-            String key = entry.getKey();
-            BaseSchema schema = entry.getValue();
-
-            if (schema == null) {
-                return false;
-            }
-
-            Object nestedValue = mapValue.get(key);
-
-            if (nestedValue == null || !schema.isValid(nestedValue)) {
+            if (!validateShapeSchemaEntry(entry, mapValue)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean validateShapeSchemaEntry(Map.Entry<String, BaseSchema> entry, Map<?, ?> mapValue) {
+        String key = entry.getKey();
+        BaseSchema schema = entry.getValue();
+
+        return schema != null && validateNestedValue(key, schema, mapValue);
+    }
+
+    private boolean validateNestedValue(String key, BaseSchema schema, Map<?, ?> mapValue) {
+        Object nestedValue = mapValue.get(key);
+        return nestedValue != null && schema.isValid(nestedValue);
     }
 }
