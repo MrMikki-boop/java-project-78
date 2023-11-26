@@ -22,14 +22,13 @@ public final class MapSchema extends BaseSchema {
 
     public MapSchema sizeof(int number) {
         size = number;
-        addCheck(SIZE_OF, value -> value == null || ((Map) value).size() == size);
+        addCheck(SIZE_OF, value -> value == null || ((Map<?, ?>) value).size() == size);
         return this;
     }
 
-    public MapSchema shape(Map<String, BaseSchema> map) {
+    public void shape(Map<String, BaseSchema> map) {
         schemas = map;
         addCheck(SHAPE, value -> schemas.entrySet().stream()
-                .allMatch(entry -> entry.getValue().isValid(((Map) value).get(entry.getKey()))));
-        return this;
+                .allMatch(entry -> entry.getValue().isValid(((Map<?, ?>) value).get(entry.getKey()))));
     }
 }

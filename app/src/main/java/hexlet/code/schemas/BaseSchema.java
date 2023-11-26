@@ -11,9 +11,8 @@ public abstract class BaseSchema {
         checks = new LinkedHashMap<>();
     }
 
-    public BaseSchema addCheck(String name, Predicate<Object> check) {
+    public void addCheck(String name, Predicate<Object> check) {
         checks.put(name, check);
-        return this;
     }
 
     public final boolean isValid(Object value) {
