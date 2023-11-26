@@ -1,12 +1,28 @@
 package hexlet.code.schemas;
 
-public abstract class BaseSchema {
-    protected boolean required = false;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.function.Predicate;
 
-    public MapSchema required() {
-        required = true;
-        return null;
+public abstract class BaseSchema {
+    protected Map<String, Predicate> checks;
+
+    public BaseSchema() {
+        checks = new LinkedHashMap<>();
     }
 
-    public abstract boolean isValid(Object value);
+    public BaseSchema addCheck(String name, Predicate<Object> check) {
+        checks.put(name, check);
+        return this;
+    }
+
+    public final boolean isValid(Object value) {
+
+        for (Predicate validate : checks.values()) {
+            if (!validate.test(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
