@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class ValidatorTest {
     private static final Map<String, String> MAP_1 = Map.of(
@@ -42,152 +41,165 @@ public final class ValidatorTest {
 
     @Test
     void stringSchemaTestDefault() {
-        // Проверяем, что StringSchema по умолчанию считается валидным для null и пустой строки
-        assertTrue(validator.string().isValid(null));
-        assertTrue(validator.string().isValid(""));
-        assertTrue(validator.string().isValid("fox"));
-        assertTrue(validator.string().isValid("what does the fox say"));
+        stringSchema = validator.string();
+
+        assertThat(stringSchema.isValid(null)).isTrue();
+        assertThat(stringSchema.isValid("")).isTrue();
+        assertThat(stringSchema.isValid("fox")).isTrue();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
     }
 
     @Test
     void stringSchemaTestRequired() {
-        // Проверяем, что StringSchema, помеченный как обязательный, считает null и пустую строку невалидными
-        assertFalse(validator.string().required().isValid(null));
-        assertFalse(validator.string().required().isValid(""));
-        assertTrue(validator.string().required().isValid("fox"));
-        assertTrue(validator.string().required().isValid("what does the fox say"));
+        stringSchema = validator.string().required();
+
+        assertThat(stringSchema.isValid(null)).isFalse();
+        assertThat(stringSchema.isValid("")).isFalse();
+        assertThat(stringSchema.isValid("fox")).isTrue();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
     }
 
     @Test
     void stringSchemaTestMinLength() {
-        // Проверяем, что StringSchema с ограничением на минимальную длину корректно валидирует строки
-        assertTrue(validator.string().minLength(5).isValid(null));
-        assertFalse(validator.string().minLength(5).isValid(""));
-        assertFalse(validator.string().minLength(5).isValid("fox"));
-        assertTrue(validator.string().minLength(5).isValid("what does the fox say"));
+        stringSchema = validator.string().minLength(5);
 
-        // Устанавливаем новую минимальную длину и проверяем валидацию
-        validator.string().minLength(3);
-        assertTrue(validator.string().minLength(3).isValid("fox"));
+        assertThat(stringSchema.isValid(null)).isTrue();
+        assertThat(stringSchema.isValid("")).isFalse();
+        assertThat(stringSchema.isValid("fox")).isFalse();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
+
+        stringSchema.minLength(3);
+
+        assertThat(stringSchema.isValid("fox")).isTrue();
     }
 
     @Test
     void stringSchemaTestContains() {
-        // Проверяем, что StringSchema с ограничением на наличие подстроки корректно валидирует строки
-        assertFalse(validator.string().contains("fox").isValid(null));
-        assertFalse(validator.string().contains("fox").isValid(""));
-        assertTrue(validator.string().contains("fox").isValid("fox"));
-        assertTrue(validator.string().contains("fox").isValid("what does the fox say"));
+        stringSchema = validator.string().contains("fox");
 
-        // Устанавливаем новую подстроку и проверяем валидацию
-        validator.string().contains("what");
-        assertFalse(validator.string().contains("what").isValid("fox"));
-        assertTrue(validator.string().contains("what").isValid("what does the fox say"));
+        assertThat(stringSchema.isValid(null)).isFalse();
+        assertThat(stringSchema.isValid("")).isFalse();
+        assertThat(stringSchema.isValid("fox")).isTrue();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
 
-        // Устанавливаем другую новую подстроку и проверяем валидацию
-        validator.string().contains("something else");
-        assertFalse(validator.string().contains("something else").isValid("what does the fox say"));
+        stringSchema.contains("what");
+
+        assertThat(stringSchema.isValid("fox")).isFalse();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
+
+        stringSchema.contains("something else");
+
+        assertThat(stringSchema.isValid("what does the fox say")).isFalse();
     }
 
     @Test
     void stringSchemaTestAllMethods() {
-        // Проверяем, что StringSchema совместно использует все установленные ограничения
-        assertFalse(validator.string().required().minLength(5).isValid(null));
-        assertFalse(validator.string().required().minLength(5).isValid(""));
-        assertFalse(validator.string().required().minLength(5).isValid("fox"));
-        assertTrue(validator.string().required().minLength(5).isValid("what does the fox say"));
+        stringSchema = validator.string().required().minLength(5);
 
-        // Проверяем, что метод contains также учитывается при валидации
-        validator.string().contains("fox");
-        assertFalse(validator.string().required().minLength(5).isValid("fox"));
-        assertTrue(validator.string().required().minLength(5).isValid("what does the fox say"));
+        assertThat(stringSchema.isValid(null)).isFalse();
+        assertThat(stringSchema.isValid("")).isFalse();
+        assertThat(stringSchema.isValid("fox")).isFalse();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
+
+        stringSchema.contains("fox");
+
+        assertThat(stringSchema.isValid("fox")).isFalse();
+        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
     }
 
     @Test
     void numberSchemaTestDefault() {
-        // Проверяем, что NumberSchema по умолчанию считается валидным для null и чисел
-        assertTrue(validator.number().isValid(null));
-        assertTrue(validator.number().isValid(10));
-        assertTrue(validator.number().isValid(-10));
-        assertFalse(validator.number().isValid("10"));
+        numberSchema = validator.number();
+
+        assertThat(numberSchema.isValid(null)).isTrue();
+        assertThat(numberSchema.isValid(10)).isTrue();
+        assertThat(numberSchema.isValid(-10)).isTrue();
+        assertThat(numberSchema.isValid("10")).isFalse();
     }
 
     @Test
     void numberSchemaTestRequired() {
-        // Проверяем, что NumberSchema, помеченный как обязательный, считает null невалидным
-        assertFalse(validator.number().required().isValid(null));
-        assertTrue(validator.number().required().isValid(10));
-        assertTrue(validator.number().required().isValid(-10));
-        assertFalse(validator.number().required().isValid("10"));
+        numberSchema = validator.number().required();
+
+        assertThat(numberSchema.isValid(null)).isFalse();
+        assertThat(numberSchema.isValid(10)).isTrue();
+        assertThat(numberSchema.isValid(-10)).isTrue();
+        assertThat(numberSchema.isValid("10")).isFalse();
     }
 
     @Test
     void numberSchemaTestPositive() {
-        // Проверяем, что NumberSchema с ограничением на положительные числа корректно валидирует числа
-        assertTrue(validator.number().positive().isValid(null));
-        assertTrue(validator.number().positive().isValid(10));
-        assertFalse(validator.number().positive().isValid(-10));
-        assertFalse(validator.number().positive().isValid("10"));
+        numberSchema = validator.number().positive();
+
+        assertThat(numberSchema.isValid(null)).isTrue();
+        assertThat(numberSchema.isValid(10)).isTrue();
+        assertThat(numberSchema.isValid(-10)).isFalse();
+        assertThat(numberSchema.isValid("10")).isFalse();
     }
 
     @Test
     void numberSchemaTestRange() {
-        // Проверяем, что NumberSchema с ограничением на диапазон корректно валидирует числа
-        assertTrue(validator.number().range(-10, 0).isValid(null));
-        assertFalse(validator.number().range(-10, 0).isValid(10));
-        assertTrue(validator.number().range(-10, 0).isValid(-10));
-        assertTrue(validator.number().range(-10, 0).isValid(0));
-        assertFalse(validator.number().range(-10, 0).isValid("10"));
+        numberSchema = validator.number().range(-10, 0);
+
+        assertThat(numberSchema.isValid(null)).isTrue();
+        assertThat(numberSchema.isValid(10)).isFalse();
+        assertThat(numberSchema.isValid(-10)).isTrue();
+        assertThat(numberSchema.isValid(0)).isTrue();
+        assertThat(numberSchema.isValid("10")).isFalse();
     }
 
     @Test
     void numberSchemaTestAllMethods() {
-        // Проверяем, что NumberSchema совместно использует все установленные ограничения
-        assertFalse(validator.number().required().positive().range(-10, 0).isValid(null));
-        assertFalse(validator.number().required().positive().range(-10, 0).isValid(10));
-        assertFalse(validator.number().required().positive().range(-10, 0).isValid(-10));
-        assertFalse(validator.number().required().positive().range(-10, 0).isValid("10"));
+        numberSchema = validator.number().required().positive().range(-10, 0);
+
+        assertThat(numberSchema.isValid(null)).isFalse();
+        assertThat(numberSchema.isValid(10)).isFalse();
+        assertThat(numberSchema.isValid(-10)).isFalse();
+        assertThat(numberSchema.isValid("10")).isFalse();
     }
 
     @Test
     void mapSchemaTestDefault() {
-        // Проверяем, что MapSchema по умолчанию считается валидным для null и пустой карты
-        assertTrue(validator.map().isValid(null));
-        assertTrue(validator.map().isValid(new HashMap<>()));
-        assertTrue(validator.map().isValid(MAP_1));
-        assertTrue(validator.map().isValid(MAP_2));
+        mapSchema = validator.map();
+
+        assertThat(mapSchema.isValid(null)).isTrue();
+        assertThat(mapSchema.isValid(new HashMap<>())).isTrue();
+        assertThat(mapSchema.isValid(MAP_1)).isTrue();
+        assertThat(mapSchema.isValid(MAP_2)).isTrue();
     }
 
     @Test
     void mapSchemaTestRequired() {
-        // Проверяем, что MapSchema, помеченный как обязательный, считает null невалидным
-        assertFalse(validator.map().required().isValid(null));
-        assertTrue(validator.map().required().isValid(new HashMap<>()));
-        assertTrue(validator.map().required().isValid(MAP_1));
-        assertTrue(validator.map().required().isValid(MAP_2));
+        mapSchema = validator.map().required();
+
+        assertThat(mapSchema.isValid(null)).isFalse();
+        assertThat(mapSchema.isValid(new HashMap<>())).isTrue();
+        assertThat(mapSchema.isValid(MAP_1)).isTrue();
+        assertThat(mapSchema.isValid(MAP_2)).isTrue();
     }
 
     @Test
     void mapSchemaTestSizeOf() {
-        // Проверяем, что MapSchema с ограничением на размер корректно валидирует карты
-        assertTrue(validator.map().sizeof(2).isValid(null));
-        assertFalse(validator.map().sizeof(2).isValid(new HashMap<>()));
-        assertFalse(validator.map().sizeof(2).isValid(MAP_1));
-        assertTrue(validator.map().sizeof(2).isValid(MAP_2));
+        mapSchema = validator.map().sizeof(2);
+
+        assertThat(mapSchema.isValid(null)).isTrue();
+        assertThat(mapSchema.isValid(new HashMap<>())).isFalse();
+        assertThat(mapSchema.isValid(MAP_1)).isFalse();
+        assertThat(mapSchema.isValid(MAP_2)).isTrue();
     }
 
     @Test
     void mapSchemaTestBothMethods() {
-        // Проверяем, что MapSchema совместно использует оба установленных ограничения
-        assertFalse(validator.map().required().sizeof(2).isValid(null));
-        assertFalse(validator.map().required().sizeof(2).isValid(new HashMap<>()));
-        assertFalse(validator.map().required().sizeof(2).isValid(MAP_1));
-        assertTrue(validator.map().required().sizeof(2).isValid(MAP_2));
+        mapSchema = validator.map().required().sizeof(2);
+
+        assertThat(mapSchema.isValid(null)).isFalse();
+        assertThat(mapSchema.isValid(new HashMap<>())).isFalse();
+        assertThat(mapSchema.isValid(MAP_1)).isFalse();
+        assertThat(mapSchema.isValid(MAP_2)).isTrue();
     }
 
     @Test
     void mapSchemaTestShape() {
-        // Проверяем, что MapSchema с ограничением на форму корректно валидирует карты
         mapSchema = validator.map();
 
         Map<String, BaseSchema> schemas = new HashMap<>();
@@ -196,12 +208,12 @@ public final class ValidatorTest {
         mapSchema.shape(schemas);
 
         Map<String, Object> map3 = new HashMap<>();
-        map3.put("name", "Maksim");
-        map3.put("age", 19);
-        assertTrue(mapSchema.isValid(map3));
+        map3.put("name", "Eliza");
+        map3.put("age", 24);
+        assertThat(mapSchema.isValid(map3)).isTrue();
 
-        map3.put("name", 19);
-        map3.put("age", "Maksim");
-        assertFalse(mapSchema.isValid(map3));
+        map3.put("name", 24);
+        map3.put("age", "Eliza");
+        assertThat(mapSchema.isValid(map3)).isFalse();
     }
 }
