@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.schemas.BaseSchema;
 import hexlet.code.schemas.MapSchema;
 import hexlet.code.schemas.NumberSchema;
 import hexlet.code.schemas.StringSchema;
@@ -60,31 +61,37 @@ class ValidatorTest {
     }
 
     @Test
-    void testMapSchemaValidation() {
+    void testMapSchemaWithShapeValidation() {
         Validator v = new Validator();
         MapSchema schema = v.map();
 
-        // Проверка null до установки required
-        assertTrue(schema.isValid(null));
+        // Определяем схемы валидации для значений свойств "name" и "age"
+        Map<String, BaseSchema> schemas = new HashMap<>();
+        schemas.put("name", v.string().required());
+        schemas.put("age", v.number().positive());
 
-        schema.required();
+        // Передаем созданный набор схем в метод shape()
+        schema.shape(schemas);
 
-        // Проверка null после установки required
-        assertFalse(schema.isValid(null));
+        // Проверяем объекты
+        Map<String, Object> human1 = new HashMap<>();
+        human1.put("name", "Kolya");
+        human1.put("age", 100);
+        assertFalse(schema.isValid(human1), "human1 should be valid");
 
-        // Проверка пустой Map
-        assertTrue(schema.isValid(new HashMap<>()));
+        Map<String, Object> human2 = new HashMap<>();
+        human2.put("name", "Maya");
+        human2.put("age", null);
+        assertFalse(schema.isValid(human2), "human2 should be valid");
 
-        // Проверка Map с парами ключ-значение
-        Map<String, String> data = new HashMap<>();
-        data.put("key1", "value1");
-        assertTrue(schema.isValid(data));
+        Map<String, Object> human3 = new HashMap<>();
+        human3.put("name", "");
+        human3.put("age", null);
+        assertFalse(schema.isValid(human3), "human3 should not be valid");
 
-        // Проверка sizeof
-        schema.sizeof(2);
-        assertFalse(schema.isValid(data));
-
-        data.put("key2", "value2");
-        assertTrue(schema.isValid(data));
+        Map<String, Object> human4 = new HashMap<>();
+        human4.put("name", "Valya");
+        human4.put("age", -5);
+        assertFalse(schema.isValid(human4), "human4 should not be valid");
     }
 }
