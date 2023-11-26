@@ -5,13 +5,21 @@ import java.util.Map;
 public class MapSchema extends BaseSchema {
     private boolean requireNonNull = false;
     private Integer sizeConstraint;
+    private Map<String, BaseSchema> shapeSchemas;
 
-    public void required() {
+    public MapSchema required() {
         requireNonNull = true;
+        return this;
     }
 
-    public void sizeof(int size) {
+    public MapSchema sizeof(int size) {
         sizeConstraint = size;
+        return this;
+    }
+
+    public MapSchema shape(Map<String, BaseSchema> schemas) {
+        shapeSchemas = schemas;
+        return this;
     }
 
     @Override
@@ -21,10 +29,10 @@ public class MapSchema extends BaseSchema {
         }
 
         if (value == null) {
-            return !required; // Изменено: isValid(null) возвращает true, если не установлено required()
+            return !required;
         }
 
-        if (!(value instanceof Map)) {
+        if (!(value instanceof Map<?, ?>)) {
             return false;
         }
 
@@ -34,7 +42,27 @@ public class MapSchema extends BaseSchema {
             return false;
         }
 
-        return sizeConstraint == null || mapValue.size() == sizeConstraint;
-    }
+        if (sizeConstraint != null && mapValue.size() != sizeConstraint) {
+            return false;
+        }
 
+        if (shapeSchemas != null) {
+            for (Map.Entry<String, BaseSchema> entry : shapeSchemas.entrySet()) {
+                String key = entry.getKey();
+                BaseSchema schema = entry.getValue();
+
+                // Добавляем проверку на null перед вызовом isValid для вложенных схем
+                if (schema == null) {
+                    return false;
+                }
+
+                Object nestedValue = mapValue.get(key);
+                if (nestedValue == null || !schema.isValid(nestedValue)) {
+                    return false;
+                }
+            }
+        }
+
+        return true; // Возвращаем true только если все проверки прошли успешно
+    }
 }
