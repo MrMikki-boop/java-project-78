@@ -4,7 +4,6 @@ import java.util.Map;
 
 public class MapSchema extends BaseSchema {
     private boolean requireNonNull = false;
-    private Integer sizeConstraint;
     private Map<String, BaseSchema> shapeSchemas;
 
     public MapSchema required() {
