@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class MapSchema extends BaseSchema {
     private boolean requireNonNull = false;
+    private Integer sizeConstraint;
     private Map<String, BaseSchema> shapeSchemas;
 
     public MapSchema required() {
@@ -11,8 +12,14 @@ public class MapSchema extends BaseSchema {
         return this;
     }
 
-    public void shape(Map<String, BaseSchema> schemas) {
+    public MapSchema sizeOf(int size) {
+        sizeConstraint = size;
+        return this;
+    }
+
+    public MapSchema shape(Map<String, BaseSchema> schemas) {
         shapeSchemas = schemas;
+        return this;
     }
 
     @Override
@@ -25,9 +32,11 @@ public class MapSchema extends BaseSchema {
             return !required;
         }
 
-        if (!(value instanceof Map<?, ?> mapValue)) {
+        if (!(value instanceof Map<?, ?>)) {
             return false;
         }
+
+        Map<?, ?> mapValue = (Map<?, ?>) value;
 
         if (requireNonNull && mapValue.containsValue(null)) {
             return false;
