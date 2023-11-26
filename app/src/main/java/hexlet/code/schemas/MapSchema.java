@@ -12,14 +12,8 @@ public class MapSchema extends BaseSchema {
         return this;
     }
 
-    public MapSchema sizeof(int size) {
-        sizeConstraint = size;
-        return this;
-    }
-
-    public MapSchema shape(Map<String, BaseSchema> schemas) {
+    public void shape(Map<String, BaseSchema> schemas) {
         shapeSchemas = schemas;
-        return this;
     }
 
     @Override
@@ -32,11 +26,9 @@ public class MapSchema extends BaseSchema {
             return !required;
         }
 
-        if (!(value instanceof Map<?, ?>)) {
+        if (!(value instanceof Map<?, ?> mapValue)) {
             return false;
         }
-
-        Map<?, ?> mapValue = (Map<?, ?>) value;
 
         if (requireNonNull && mapValue.containsValue(null)) {
             return false;
