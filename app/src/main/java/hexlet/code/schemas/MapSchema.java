@@ -2,67 +2,34 @@ package hexlet.code.schemas;
 
 import java.util.Map;
 
-public class MapSchema extends BaseSchema {
-    private boolean requireNonNull = false;
-    private Integer sizeConstraint;
-    private Map<String, BaseSchema> shapeSchemas;
+public final class MapSchema extends BaseSchema {
+    private static final String DATA_TYPE = "dataType";
+    private static final String REQUIRED = "required";
+    private static final String SIZE_OF = "sizeOf";
+    private static final String SHAPE = "shape";
+
+    private int size;
+    private Map<String, BaseSchema> schemas;
+
+    public MapSchema() {
+        addCheck(DATA_TYPE, value -> (value instanceof Map) || value == null);
+    }
 
     public MapSchema required() {
-        requireNonNull = true;
+        addCheck(REQUIRED, value -> value instanceof Map);
         return this;
     }
 
-    public MapSchema sizeOf(int size) {
-        sizeConstraint = size;
+    public MapSchema sizeof(int number) {
+        size = number;
+        addCheck(SIZE_OF, value -> value == null || ((Map) value).size() == size);
         return this;
     }
 
-    public MapSchema shape(Map<String, BaseSchema> schemas) {
-        shapeSchemas = schemas;
+    public MapSchema shape(Map<String, BaseSchema> map) {
+        schemas = map;
+        addCheck(SHAPE, value -> schemas.entrySet().stream()
+                .allMatch(entry -> entry.getValue().isValid(((Map) value).get(entry.getKey()))));
         return this;
-    }
-
-    @Override
-    public boolean isValid(Object value) {
-        if (requireNonNull && !(value instanceof Map<?, ?>)) {
-            return false;
-        }
-
-        if (value == null) {
-            return !required;
-        }
-
-        Map<?, ?> mapValue = (Map<?, ?>) value;
-
-        if (requireNonNull && mapValue.containsValue(null)) {
-            return false;
-        }
-
-        if (sizeConstraint != null && mapValue.size() != sizeConstraint) {
-            return false;
-        }
-
-        return shapeSchemas == null || validateShapeSchemas(mapValue);
-    }
-
-    private boolean validateShapeSchemas(Map<?, ?> mapValue) {
-        for (Map.Entry<String, BaseSchema> entry : shapeSchemas.entrySet()) {
-            if (!validateShapeSchemaEntry(entry, mapValue)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateShapeSchemaEntry(Map.Entry<String, BaseSchema> entry, Map<?, ?> mapValue) {
-        String key = entry.getKey();
-        BaseSchema schema = entry.getValue();
-
-        return schema != null && validateNestedValue(key, schema, mapValue);
-    }
-
-    private boolean validateNestedValue(String key, BaseSchema schema, Map<?, ?> mapValue) {
-        Object nestedValue = mapValue.get(key);
-        return nestedValue != null && schema.isValid(nestedValue);
     }
 }
