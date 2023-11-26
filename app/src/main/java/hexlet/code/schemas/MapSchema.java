@@ -24,16 +24,12 @@ public class MapSchema extends BaseSchema {
 
     @Override
     public boolean isValid(Object value) {
-        if (requireNonNull && value == null) {
+        if (requireNonNull && (!(value instanceof Map<?, ?>))) {
             return false;
         }
 
         if (value == null) {
             return !required;
-        }
-
-        if (!(value instanceof Map<?, ?>)) {
-            return false;
         }
 
         Map<?, ?> mapValue = (Map<?, ?>) value;
@@ -46,23 +42,24 @@ public class MapSchema extends BaseSchema {
             return false;
         }
 
-        if (shapeSchemas != null) {
-            for (Map.Entry<String, BaseSchema> entry : shapeSchemas.entrySet()) {
-                String key = entry.getKey();
-                BaseSchema schema = entry.getValue();
+        return shapeSchemas == null || validateShapeSchemas(mapValue);
+    }
 
-                // Добавляем проверку на null перед вызовом isValid для вложенных схем
-                if (schema == null) {
-                    return false;
-                }
+    private boolean validateShapeSchemas(Map<?, ?> mapValue) {
+        for (Map.Entry<String, BaseSchema> entry : shapeSchemas.entrySet()) {
+            String key = entry.getKey();
+            BaseSchema schema = entry.getValue();
 
-                Object nestedValue = mapValue.get(key);
-                if (nestedValue == null || !schema.isValid(nestedValue)) {
-                    return false;
-                }
+            if (schema == null) {
+                return false;
+            }
+
+            Object nestedValue = mapValue.get(key);
+
+            if (nestedValue == null || !schema.isValid(nestedValue)) {
+                return false;
             }
         }
-
-        return true; // Возвращаем true только если все проверки прошли успешно
+        return true;
     }
 }
