@@ -1,30 +1,34 @@
 package hexlet.code.schemas;
 
-public class StringSchema extends BaseSchema {
-    private Integer minLength;
-    private String contains;
+public final class StringSchema extends BaseSchema {
 
-    public StringSchema minLength(int length) {
-        this.minLength = length;
+    private static final String DATA_TYPE = "dataType";
+    private static final String REQUIRED = "required";
+    private static final String MIN_LENGTH = "minLength";
+    private static final String CONTAINS = "contains";
+
+    private int minLengthNumber;
+    private String content;
+
+    public StringSchema() {
+        addCheck(DATA_TYPE, value -> (value instanceof String) || value == null);
+    }
+
+    public StringSchema required() {
+        addCheck(REQUIRED, value -> (value instanceof String) && (!value.equals("")));
         return this;
     }
 
-    public void contains(String substring) {
-        this.contains = substring;
+    public StringSchema minLength(int number) {
+        minLengthNumber = number;
+        addCheck(MIN_LENGTH, value -> (value == null) || (value.toString().length() >= minLengthNumber));
+        return this;
     }
 
-    @Override
-    public boolean isValid(Object value) {
-        if (required && (value == null || value.toString().isEmpty())) {
-            return false;
-        }
-
-        String stringValue = (String) value;
-
-        if (minLength != null && stringValue.length() < minLength) {
-            return false;
-        }
-
-        return contains == null || stringValue.contains(contains);
+    public StringSchema contains(String string) {
+        content = string;
+        addCheck(CONTAINS, value -> (value != null) && (value.toString().contains(content)));
+        return this;
     }
+
 }
