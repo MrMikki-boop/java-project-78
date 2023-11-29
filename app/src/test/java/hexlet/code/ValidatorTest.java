@@ -38,14 +38,12 @@ public final class ValidatorTest {
     @BeforeEach
     void beforeEach() {
         validator = new Validator();
+        stringSchema = validator.string();
     }
 
     // Тестирование схемы для строк
     @Test
-    void stringSchemaTestDefault() {
-        stringSchema = validator.string();
-
-        // Проверка, что схема валидирует значения по умолчанию
+    void shouldValidateDefaultValues() {
         assertThat(stringSchema.isValid(null)).isTrue();
         assertThat(stringSchema.isValid("")).isTrue();
         assertThat(stringSchema.isValid("fox")).isTrue();
@@ -53,10 +51,9 @@ public final class ValidatorTest {
     }
 
     @Test
-    void stringSchemaTestRequired() {
-        stringSchema = validator.string().required();
+    void shouldValidateRequiredValues() {
+        stringSchema.required();
 
-        // Проверка, что схема валидирует обязательные значения
         assertThat(stringSchema.isValid(null)).isFalse();
         assertThat(stringSchema.isValid("")).isFalse();
         assertThat(stringSchema.isValid("fox")).isTrue();
