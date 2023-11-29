@@ -38,5 +38,4 @@ public final class MapSchema extends BaseSchema {
         addCheck(SHAPE, value -> schemas.entrySet().stream()
                 .allMatch(entry -> entry.getValue().isValid(((Map<?, ?>) value).get(entry.getKey()))));
     }
-
 }
