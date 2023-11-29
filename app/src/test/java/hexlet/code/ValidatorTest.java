@@ -68,7 +68,7 @@ public final class ValidatorTest {
     @Test
     void stringSchemaTestMinLength() {
         // Установка минимальной длины и проверка валидации
-        stringSchema.minLength(5);
+        stringSchema = stringSchema.minLength(5);
 
         assertThat(stringSchema.isValid(null)).isTrue();
         assertThat(stringSchema.isValid("")).isFalse();
@@ -83,7 +83,7 @@ public final class ValidatorTest {
     @Test
     void stringSchemaTestContains() {
         // Установка подстроки и проверка валидации
-        stringSchema.contains("fox");
+        stringSchema = stringSchema.contains("fox");
 
         assertThat(stringSchema.isValid(null)).isFalse();
         assertThat(stringSchema.isValid("")).isFalse();
