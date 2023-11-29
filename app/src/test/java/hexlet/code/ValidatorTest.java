@@ -37,9 +37,8 @@ public final class ValidatorTest {
 
     @BeforeEach
     void beforeEach() {
-        // Инициализация валидатора и схемы для строк перед каждым тестом
+        // Инициализация валидатора и схем перед каждым тестом
         validator = new Validator();
-
         stringSchema = validator.string();
         numberSchema = validator.number();
         mapSchema = validator.map();
@@ -49,7 +48,6 @@ public final class ValidatorTest {
     @Test
     void shouldValidateDefaultValues() {
         // Проверка, что схема валидирует значения по умолчанию
-
         assertThat(stringSchema.isValid(null)).isTrue();
         assertThat(stringSchema.isValid("")).isTrue();
         assertThat(stringSchema.isValid("fox")).isTrue();
@@ -122,7 +120,6 @@ public final class ValidatorTest {
     @Test
     void numberSchemaTestDefault() {
         // Проверка, что схема валидирует значения по умолчанию
-
         assertThat(numberSchema.isValid(null)).isTrue();
         assertThat(numberSchema.isValid(10)).isTrue();
         assertThat(numberSchema.isValid(-10)).isTrue();
@@ -178,7 +175,6 @@ public final class ValidatorTest {
     @Test
     void mapSchemaTestDefault() {
         // Проверка, что схема валидирует значения по умолчанию
-
         assertThat(mapSchema.isValid(null)).isTrue();
         assertThat(mapSchema.isValid(new HashMap<>())).isTrue();
         assertThat(mapSchema.isValid(MAP_1)).isTrue();
@@ -220,7 +216,6 @@ public final class ValidatorTest {
 
     @Test
     void mapSchemaTestShape() {
-
         // Проверка, что схема валидирует структуру карты
         Map<String, BaseSchema> schemas = new HashMap<>();
         schemas.put("name", validator.string().required());
