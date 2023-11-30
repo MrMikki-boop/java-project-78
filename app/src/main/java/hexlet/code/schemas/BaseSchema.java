@@ -4,33 +4,47 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.function.Predicate;
 
+/**
+ * Абстрактный класс, представляющий базовую схему для валидации значений.
+ */
 public abstract class BaseSchema {
 
-    // Переменная для хранения проверок в виде отображения (название проверки -> условие)
+    /**
+     * Переменная для хранения проверок в виде отображения (название проверки -> условие).
+     */
     protected Map<String, Predicate> checks;
 
+    /**
+     * Конструктор. Инициализирует переменную checks новым экземпляром
+     * LinkedHashMap для сохранения порядка добавления элементов.
+     */
     public BaseSchema() {
-        // Инициализация переменной checks новым экземпляром LinkedHashMap для сохранения порядка добавления элементов
         checks = new LinkedHashMap<>();
     }
 
-    // Метод для добавления проверки в отображение checks
+    /**
+     * Метод для добавления проверки в отображение checks.
+     *
+     * @param name  java-project-78
+     * @param check условие проверки - объект типа Predicate<Object>,
+     *              представляющий условие, которое должно быть выполнено для успешной валидации значения
+     */
     public void addCheck(String name, Predicate<Object> check) {
-        // Добавление проверки в отображение checks
         checks.put(name, check);
     }
 
-    // Метод для проверки валидности переданного значения
+    /**
+     * Метод для проверки валидности переданного значения.
+     *
+     * @param value значение для валидации
+     * @return true, если значение проходит все проверки, false в противном случае
+     */
     public final boolean isValid(Object value) {
-
-        // Перебор всех проверок в отображении checks
         for (Predicate validate : checks.values()) {
-            // Если хотя бы одна проверка не пройдена, возвращается false
             if (!validate.test(value)) {
                 return false;
             }
         }
-
         return true;
     }
 }
