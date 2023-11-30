@@ -2,3 +2,12 @@
 /app/.idea/
 /app/build/
 .gradle
+build
+
+**/logs/
+
+.settings
+bin
+.project*
+.classpath
+.idea/
