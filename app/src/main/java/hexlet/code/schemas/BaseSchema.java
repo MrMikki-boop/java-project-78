@@ -16,6 +16,7 @@ public abstract class BaseSchema {
 
     // Метод для добавления проверки в отображение checks
     public void addCheck(String name, Predicate<Object> check) {
+        // Добавление проверки в отображение checks
         checks.put(name, check);
     }
 
