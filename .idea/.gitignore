@@ -1,0 +1,14 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+.gradle
+build
+
+**/logs/
+
+.settings
+bin
+.project*
+.classpath
+.idea/
