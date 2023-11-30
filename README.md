@@ -68,7 +68,7 @@ map.put("name", "Maksim");
 map.put("age", 19);
 schema.isValid(map); // true
 
-map.put("name", 123);
+map.put("name", 987);
 schema.isValid(map); // false
 ```
 ## Run
