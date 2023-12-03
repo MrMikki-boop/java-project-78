@@ -8,10 +8,6 @@ public final class StringSchema extends BaseSchema {
     private static final String MIN_LENGTH = "minLength";
     private static final String CONTAINS = "contains";
 
-    // Переменные для хранения параметров минимальной длины и подстроки
-    private int minLengthNumber;
-    private String content;
-
     // Конструктор класса, который добавляет проверку на соответствие типу данных (String или null)
     public StringSchema() {
         addCheck(DATA_TYPE, value -> (value instanceof String) || value == null);
@@ -25,15 +21,13 @@ public final class StringSchema extends BaseSchema {
 
     // Метод, добавляющий проверку на минимальную длину строки
     public StringSchema minLength(int number) {
-        minLengthNumber = number;
-        addCheck(MIN_LENGTH, value -> (value == null) || (((String) value).length() >= minLengthNumber));
+        addCheck(MIN_LENGTH, value -> (value == null) || (((String) value).length() >= number));
         return this;
     }
 
     // Метод, добавляющий проверку на наличие определенной подстроки
     public StringSchema contains(String string) {
-        content = string;
-        addCheck(CONTAINS, value -> (value != null) && ((String) value).contains(content));
+        addCheck(CONTAINS, value -> (value != null) && ((String) value).contains(string));
         return this;
     }
 }
