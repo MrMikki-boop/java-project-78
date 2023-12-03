@@ -19,21 +19,21 @@ public final class StringSchema extends BaseSchema {
 
     // Метод, добавляющий проверку на обязательность (должно быть не null и не пустой строкой)
     public StringSchema required() {
-        addCheck(REQUIRED, value -> (value instanceof String) && (!value.equals("")));
+        addCheck(REQUIRED, value -> (value instanceof String) && !((String) value).isEmpty());
         return this;
     }
 
     // Метод, добавляющий проверку на минимальную длину строки
     public StringSchema minLength(int number) {
         minLengthNumber = number;
-        addCheck(MIN_LENGTH, value -> (value == null) || (value.toString().length() >= minLengthNumber));
+        addCheck(MIN_LENGTH, value -> (value == null) || (((String) value).length() >= minLengthNumber));
         return this;
     }
 
     // Метод, добавляющий проверку на наличие определенной подстроки
     public StringSchema contains(String string) {
         content = string;
-        addCheck(CONTAINS, value -> (value != null) && (value.toString().contains(content)));
+        addCheck(CONTAINS, value -> (value != null) && ((String) value).contains(content));
         return this;
     }
 }
