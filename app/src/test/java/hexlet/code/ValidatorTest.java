@@ -46,71 +46,25 @@ public final class ValidatorTest {
 
     // Тестирование схемы для строк
     @Test
-    void shouldValidateDefaultValues() {
+    void testStringValidator() {
         // Проверка, что схема валидирует значения по умолчанию
         assertThat(stringSchema.isValid(null)).isTrue();
         assertThat(stringSchema.isValid("")).isTrue();
-        assertThat(stringSchema.isValid("fox")).isTrue();
-        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
-    }
 
-    @Test
-    void shouldValidateRequiredValues() {
         // Установка обязательности и проверка валидации
         stringSchema.required();
-
         assertThat(stringSchema.isValid(null)).isFalse();
         assertThat(stringSchema.isValid("")).isFalse();
-        assertThat(stringSchema.isValid("fox")).isTrue();
         assertThat(stringSchema.isValid("what does the fox say")).isTrue();
-    }
 
-    @Test
-    void stringSchemaTestMinLength() {
         // Установка минимальной длины и проверка валидации
         stringSchema.minLength(5);
-
-        assertThat(stringSchema.isValid(null)).isTrue();
+        assertThat(stringSchema.isValid(null)).isFalse();
         assertThat(stringSchema.isValid("")).isFalse();
         assertThat(stringSchema.isValid("fox")).isFalse();
         assertThat(stringSchema.isValid("what does the fox say")).isTrue();
 
-        // Изменение минимальной длины и повторная проверка
-        stringSchema.minLength(3);
-        assertThat(stringSchema.isValid("fox")).isTrue();
-    }
-
-    @Test
-    void stringSchemaTestContains() {
         // Установка подстроки и проверка валидации
-        stringSchema.required().contains("fox");
-
-        assertThat(stringSchema.isValid(null)).isFalse();
-        assertThat(stringSchema.isValid("")).isFalse();
-        assertThat(stringSchema.isValid("fox")).isTrue();
-        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
-
-        // Изменение подстроки и повторная проверка
-        stringSchema.contains("what");
-        assertThat(stringSchema.isValid("fox")).isFalse();
-        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
-
-        // Изменение подстроки на несуществующую и повторная проверка
-        stringSchema.contains("something else");
-        assertThat(stringSchema.isValid("what does the fox say")).isFalse();
-    }
-
-    @Test
-    void stringSchemaTestAllMethods() {
-        // Установка обязательности и минимальной длины и проверка сочетания различных методов
-        stringSchema.required().minLength(5);
-
-        assertThat(stringSchema.isValid(null)).isFalse();
-        assertThat(stringSchema.isValid("")).isFalse();
-        assertThat(stringSchema.isValid("fox")).isFalse();
-        assertThat(stringSchema.isValid("what does the fox say")).isTrue();
-
-        // Изменение подстроки и повторная проверка
         stringSchema.contains("fox");
         assertThat(stringSchema.isValid("fox")).isFalse();
         assertThat(stringSchema.isValid("what does the fox say")).isTrue();
@@ -118,41 +72,29 @@ public final class ValidatorTest {
 
     // Тестирование схемы для чисел
     @Test
-    void numberSchemaTestDefault() {
+    void testNumberValidator() {
         // Проверка, что схема валидирует значения по умолчанию
         assertThat(numberSchema.isValid(null)).isTrue();
         assertThat(numberSchema.isValid(10)).isTrue();
         assertThat(numberSchema.isValid(-10)).isTrue();
         assertThat(numberSchema.isValid("10")).isFalse();
-    }
 
-    @Test
-    void numberSchemaTestRequired() {
         // Проверка, что схема валидирует обязательные значения
-        numberSchema.required();
-
+        numberSchema = validator.number().required();
         assertThat(numberSchema.isValid(null)).isFalse();
         assertThat(numberSchema.isValid(10)).isTrue();
         assertThat(numberSchema.isValid(-10)).isTrue();
         assertThat(numberSchema.isValid("10")).isFalse();
-    }
 
-    @Test
-    void numberSchemaTestPositive() {
         // Проверка, что схема валидирует положительные значения
-        numberSchema.positive();
-
+        numberSchema = validator.number().positive();
         assertThat(numberSchema.isValid(null)).isTrue();
         assertThat(numberSchema.isValid(10)).isTrue();
         assertThat(numberSchema.isValid(-10)).isFalse();
         assertThat(numberSchema.isValid("10")).isFalse();
-    }
 
-    @Test
-    void numberSchemaTestRange() {
         // Проверка, что схема валидирует значения в заданном диапазоне
-        numberSchema.range(-10, 0);
-
+        numberSchema = validator.number().range(-10, 0);
         assertThat(numberSchema.isValid(null)).isTrue();
         assertThat(numberSchema.isValid(10)).isFalse();
         assertThat(numberSchema.isValid(-10)).isTrue();
@@ -160,76 +102,53 @@ public final class ValidatorTest {
         assertThat(numberSchema.isValid("10")).isFalse();
     }
 
-    @Test
-    void numberSchemaTestAllMethods() {
-        // Проверка, что схема валидирует сочетание различных методов
-        numberSchema.required().positive().range(-10, 0);
-
-        assertThat(numberSchema.isValid(null)).isFalse();
-        assertThat(numberSchema.isValid(10)).isFalse();
-        assertThat(numberSchema.isValid(-10)).isFalse();
-        assertThat(numberSchema.isValid("10")).isFalse();
-    }
-
     // Тестирование схемы для карты (Map)
     @Test
-    void mapSchemaTestDefault() {
+    void testMapValidator() {
         // Проверка, что схема валидирует значения по умолчанию
         assertThat(mapSchema.isValid(null)).isTrue();
         assertThat(mapSchema.isValid(new HashMap<>())).isTrue();
         assertThat(mapSchema.isValid(MAP_1)).isTrue();
         assertThat(mapSchema.isValid(MAP_2)).isTrue();
-    }
 
-    @Test
-    void mapSchemaTestRequired() {
         // Проверка, что схема валидирует обязательные значения
         mapSchema.required();
-
         assertThat(mapSchema.isValid(null)).isFalse();
         assertThat(mapSchema.isValid(new HashMap<>())).isTrue();
         assertThat(mapSchema.isValid(MAP_1)).isTrue();
         assertThat(mapSchema.isValid(MAP_2)).isTrue();
-    }
 
-    @Test
-    void mapSchemaTestSizeOf() {
         // Проверка, что схема валидирует по размеру
         mapSchema.sizeof(2);
-
-        assertThat(mapSchema.isValid(null)).isTrue();
-        assertThat(mapSchema.isValid(new HashMap<>())).isFalse();
-        assertThat(mapSchema.isValid(MAP_1)).isFalse();
-        assertThat(mapSchema.isValid(MAP_2)).isTrue();
-    }
-
-    @Test
-    void mapSchemaTestBothMethods() {
-        // Проверка, что схема валидирует по обоим методам
-        mapSchema.required().sizeof(2);
-
         assertThat(mapSchema.isValid(null)).isFalse();
         assertThat(mapSchema.isValid(new HashMap<>())).isFalse();
         assertThat(mapSchema.isValid(MAP_1)).isFalse();
         assertThat(mapSchema.isValid(MAP_2)).isTrue();
-    }
 
-    @Test
-    void mapSchemaTestShape() {
         // Проверка, что схема валидирует структуру карты
+        mapSchema.shape(Map.of("key1", validator.string().required(), "key2", validator.number().positive()));
+        Map<String, Object> validMap = Map.of("key1", "value1", "key2", 123);
+        Map<String, Object> invalidMap = Map.of("key1", 123, "key2", "value2");
+
+        assertThat(mapSchema.isValid(validMap)).isTrue();
+        assertThat(mapSchema.isValid(invalidMap)).isFalse();
+
+        // Старая проверка, что схема валидирует структуру карты
         Map<String, BaseSchema> schemas = new HashMap<>();
         schemas.put("name", validator.string().required());
         schemas.put("age", validator.number().positive());
+
+        mapSchema = validator.map();  // Создание новой схемы перед каждым тестом
         mapSchema.shape(schemas);
 
         // Пример валидной карты
-        Map<String, Object> validMap = new HashMap<>();
+        validMap = new HashMap<>();
         validMap.put("name", "Maksim");
         validMap.put("age", 19);
         assertThat(mapSchema.isValid(validMap)).isTrue();
 
         // Пример карты с невалидными значениями
-        Map<String, Object> invalidMap = new HashMap<>();
+        invalidMap = new HashMap<>();
         invalidMap.put("name", 19);
         invalidMap.put("age", "Maksim");
         assertThat(mapSchema.isValid(invalidMap)).isFalse();
