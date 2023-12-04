@@ -10,10 +10,6 @@ public final class MapSchema extends BaseSchema {
     private static final String SIZE_OF = "sizeOf";
     private static final String SHAPE = "shape";
 
-    // Переменные для хранения значения размера и схемы
-    private int size;
-    private Map<String, BaseSchema> schemas;
-
     // Конструктор класса MapSchema
     public MapSchema() {
         addCheck(DATA_TYPE, value -> (value instanceof Map) || value == null);
@@ -27,15 +23,13 @@ public final class MapSchema extends BaseSchema {
 
     // Метод для установки размера отображения
     public MapSchema sizeof(int number) {
-        size = number;
-        addCheck(SIZE_OF, value -> value == null || ((Map<?, ?>) value).size() == size);
+        addCheck(SIZE_OF, value -> value == null || ((Map<?, ?>) value).size() == number);
         return this;
     }
 
     // Метод для установки формы отображения
     public void shape(Map<String, BaseSchema> map) {
-        schemas = map;
-        addCheck(SHAPE, value -> schemas.entrySet().stream()
+        addCheck(SHAPE, value -> map.entrySet().stream()
                 .allMatch(entry -> entry.getValue().isValid(((Map<?, ?>) value).get(entry.getKey()))));
     }
 }
